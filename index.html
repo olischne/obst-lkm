@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OBST-LKM</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a1a;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .team-name {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #FFD700;
+      text-shadow: 4px 4px 0 #b8860b, 0 0 30px #FFD700aa;
+      letter-spacing: 6px;
+      image-rendering: pixelated;
+    }
+
+    .tagline {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 3px 3px 0 #333, 0 0 20px #ffffffaa;
+      text-align: center;
+      padding: 0 20px;
+      max-width: 700px;
+      line-height: 1.4;
+    }
+
+    .cta-btn {
+      font-family: 'Courier New', monospace;
+      font-size: 1.8rem;
+      font-weight: bold;
+      letter-spacing: 4px;
+      padding: 18px 50px;
+      background: #FFD700;
+      color: #0a0a1a;
+      border: 4px solid #fff;
+      cursor: pointer;
+      image-rendering: pixelated;
+      box-shadow: 6px 6px 0 #b8860b;
+      transition: transform 0.1s, box-shadow 0.1s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .cta-btn:hover {
+      transform: translate(3px, 3px);
+      box-shadow: 3px 3px 0 #b8860b;
+    }
+
+    .cta-btn:active {
+      transform: translate(6px, 6px);
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="overlay">
+  <div class="team-name">OBST-LKM</div>
+  <div class="tagline">Du willst unser nächster Sponsor sein?</div>
+  <a class="cta-btn" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">KLICKE HIER</a>
+</div>
+
+<script>
+  const canvas = document.getElementById('bg');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const SCALE = 3;
+
+  const fruits = {
+    apple: {
+      palette: { R: '#e63946', G: '#2d6a4f', '.': null },
+      pixels: [
+        '....GGGG....',
+        '...RRRRRR...',
+        '..RRRRRRRR..',
+        '.RRRRRRRRRR.',
+        '.RRRRRRRRRR.',
+        '.RRRRRRRRRR.',
+        '.RRRRRRRRRR.',
+        '..RRRRRRRR..',
+        '...RRRRRR...',
+        '....RRRR....',
+      ]
+    },
+    banana: {
+      palette: { Y: '#f6c90e', O: '#e8a400', '.': null },
+      pixels: [
+        '...YYYY.....',
+        '..YYYYYO....',
+        '.YYYYYYOO...',
+        'YYYYYYYOO...',
+        '.YYYYYYOO...',
+        '..YYYYYOO...',
+        '...YYYYO....',
+        '....YYO.....',
+        '.....O......',
+      ]
+    },
+    watermelon: {
+      palette: { G: '#2d6a4f', g: '#52b788', R: '#e63946', r: '#c1121f', S: '#000000', '.': null },
+      pixels: [
+        '....GGGG....',
+        '..GGggggGG..',
+        '.GggRRRRggG.',
+        'GggRRrSRRggG',
+        'GggRrSSrRggG',
+        'GggRRrSRRggG',
+        '.GggRRRRggG.',
+        '..GGggggGG..',
+        '....GGGG....',
+      ]
+    },
+    cherry: {
+      palette: { R: '#c1121f', r: '#e63946', G: '#2d6a4f', B: '#6d4c3d', '.': null },
+      pixels: [
+        '...GG.......',
+        '..GrBG......',
+        '.GrBBrG.....',
+        '..GrrG.GG...',
+        '...GG.GrrG..',
+        '.....GrrrrG.',
+        '.....GRrRRG.',
+        '....GRRRRrG.',
+        '.....GRRRG..',
+        '......GGG...',
+      ]
+    },
+    grape: {
+      palette: { P: '#6a0dad', p: '#9b59b6', G: '#2d6a4f', '.': null },
+      pixels: [
+        '....GGG.....',
+        '...PpppP....',
+        '..PpPpPpP...',
+        '.PpPpPpPpP..',
+        '.PpPpPpPpP..',
+        '..PpPpPpP...',
+        '...PpPpP....',
+        '....PpP.....',
+        '.....P......',
+      ]
+    },
+    orange: {
+      palette: { O: '#f4a261', o: '#e76f51', G: '#2d6a4f', '.': null },
+      pixels: [
+        '....GG......',
+        '...OOOoO....',
+        '..OOOoooO...',
+        '.OOOooooooO.',
+        '.OOooooooOO.',
+        '.OOooooooOO.',
+        '.OOOooooOOO.',
+        '..OOOooOOO..',
+        '...OOOOOO...',
+        '....OOOO....',
+      ]
+    }
+  };
+
+  function drawSprite(sprite, x, y, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const rows = sprite.pixels;
+    for (let row = 0; row < rows.length; row++) {
+      for (let col = 0; col < rows[row].length; col++) {
+        const ch = rows[row][col];
+        const color = sprite.palette[ch];
+        if (color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(
+            Math.floor(x + col * SCALE),
+            Math.floor(y + row * SCALE),
+            SCALE, SCALE
+          );
+        }
+      }
+    }
+    ctx.restore();
+  }
+
+  const fruitKeys = Object.keys(fruits);
+
+  class FruitParticle {
+    constructor() { this.reset(true); }
+    reset(initial = false) {
+      this.type = fruitKeys[Math.floor(Math.random() * fruitKeys.length)];
+      this.x = Math.random() * canvas.width;
+      this.y = initial ? Math.random() * canvas.height : -60;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = 0.3 + Math.random() * 0.5;
+      this.alpha = 0.5 + Math.random() * 0.5;
+      this.rotation = Math.random() * Math.PI * 2;
+      this.rotSpeed = (Math.random() - 0.5) * 0.02;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.rotation += this.rotSpeed;
+      if (this.y > canvas.height + 60) this.reset();
+    }
+    draw() {
+      const sprite = fruits[this.type];
+      drawSprite(sprite, this.x, this.y, this.alpha);
+    }
+  }
+
+  const particles = Array.from({ length: 80 }, () => new FruitParticle());
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#0a0a1a');
+    grad.addColorStop(1, '#1a0a2e');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (const p of particles) {
+      p.update();
+      p.draw();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</body>
+</html>
